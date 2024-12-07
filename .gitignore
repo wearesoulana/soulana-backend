@@ -1,2 +1,9 @@
 /target
+**/*.rs.bk
 .env
+.env.*
+!.env.example
+.idea/
+.vscode/
+*.pdb
+Cargo.lock
