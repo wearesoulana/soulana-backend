@@ -23,14 +23,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(pool.clone()))
-            .service(
-                web::scope("/api/blink-chain")
-                    .service(routes::blink_chain::get_project)
-                    .service(routes::blink_chain::process_donation)
-                    .service(routes::blink_chain::options),
-            )
-            .service(routes::users::get_users)
-            .service(routes::users::create_user)
+            .configure(routes::configure_routes)
     })
     .bind("127.0.0.1:8080")?
     .run()
