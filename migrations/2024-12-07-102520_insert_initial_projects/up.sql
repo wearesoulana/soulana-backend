@@ -1,0 +1,3 @@
+INSERT INTO projects (id, title, description, image, target, raised, min_donation, wallet) VALUES 
+(1, 'EduChain Scholarships', 'Scholarship support for students seeking blockchain technology education.', 'https://i.ibb.co/x81s9mN/educhainscholar.png', '100 SOL', '45 SOL', 0.001, 'F1rstn82GYYuWVPYBg7YKUZ2fZskDFg27ocXBx88pcgW'),
+(2, 'GreenSol Reforestation', 'Support reforestation efforts to combat climate change.', 'https://i.ibb.co/7GHVvwP/greensolrefores.png', '200 SOL', '45 SOL', 0.001, 'F1rstn82GYYuWVPYBg7YKUZ2fZskDFg27ocXBx88pcgW'); 

@@ -1,0 +1,1 @@
+DELETE FROM projects WHERE id IN (1, 2); 
