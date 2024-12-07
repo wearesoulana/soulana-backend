@@ -1,62 +1,48 @@
 use actix_web::{get, post, web, HttpResponse, Responder};
-use sqlx::PgPool;
-
+use diesel::prelude::*;
+use crate::DbPool;
 use super::models::{User, UserResponse};
 
 #[get("/users")]
-pub async fn get_users(pool: web::Data<PgPool>) -> impl Responder {
-    match sqlx::query!(
-        "SELECT id, name, email FROM users"
-    )
-    .fetch_all(pool.get_ref())
-    .await
-    {
-        Ok(rows) => {
-            let users: Vec<UserResponse> = rows
-                .into_iter()
-                .map(|row| UserResponse {
-                    id: row.id,
-                    name: row.name,
-                    email: row.email,
-                })
-                .collect();
-            HttpResponse::Ok().json(users)
-        },
-        Err(e) => {
-            eprintln!("Database error: {}", e);
-            HttpResponse::InternalServerError().json(serde_json::json!({
-                "error": "Failed to fetch users"
-            }))
-        }
+pub async fn get_users(pool: web::Data<DbPool>) -> impl Responder {
+    use crate::schema::users::dsl::*;
+
+    let mut conn = match pool.get() {
+        Ok(conn) => conn,
+        Err(_) => return HttpResponse::InternalServerError().json(serde_json::json!({
+            "error": "Database connection error"
+        })),
+    };
+
+    match users.load::<UserResponse>(&mut conn) {
+        Ok(results) => HttpResponse::Ok().json(results),
+        Err(_) => HttpResponse::InternalServerError().json(serde_json::json!({
+            "error": "Failed to fetch users"
+        })),
     }
 }
 
 #[post("/users")]
 pub async fn create_user(
-    pool: web::Data<PgPool>,
+    pool: web::Data<DbPool>,
     user: web::Json<User>
 ) -> impl Responder {
-    match sqlx::query!(
-        "INSERT INTO users (name, email) VALUES ($1, $2) RETURNING id, name, email",
-        user.name,
-        user.email
-    )
-    .fetch_one(pool.get_ref())
-    .await
+    use crate::schema::users::dsl::*;
+
+    let mut conn = match pool.get() {
+        Ok(conn) => conn,
+        Err(_) => return HttpResponse::InternalServerError().json(serde_json::json!({
+            "error": "Database connection error"
+        })),
+    };
+
+    match diesel::insert_into(users)
+        .values(&user.into_inner())
+        .get_result::<UserResponse>(&mut conn)
     {
-        Ok(row) => {
-            let created_user = UserResponse {
-                id: row.id,
-                name: row.name,
-                email: row.email,
-            };
-            HttpResponse::Created().json(created_user)
-        },
-        Err(e) => {
-            eprintln!("Database error: {}", e);
-            HttpResponse::InternalServerError().json(serde_json::json!({
-                "error": "Failed to create user"
-            }))
-        }
+        Ok(result) => HttpResponse::Created().json(result),
+        Err(_) => HttpResponse::InternalServerError().json(serde_json::json!({
+            "error": "Failed to create user"
+        })),
     }
 } 
