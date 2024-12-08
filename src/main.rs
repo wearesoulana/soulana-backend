@@ -6,6 +6,8 @@ use std::env;
 
 mod routes;
 mod schema;
+mod models;
+mod services;
 
 pub type DbPool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
@@ -20,9 +22,12 @@ async fn main() -> std::io::Result<()> {
         .build(manager)
         .expect("Failed to create pool");
 
+    let auth_service = web::Data::new(services::auth::AuthService::new(pool.clone()));
+
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(pool.clone()))
+            .app_data(auth_service.clone())
             .configure(routes::configure_routes)
     })
     .bind("127.0.0.1:8080")?
