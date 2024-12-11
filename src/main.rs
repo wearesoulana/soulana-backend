@@ -29,7 +29,7 @@ async fn main() -> std::io::Result<()> {
 
     let auth_service = web::Data::new(services::auth::AuthService::new(pool.clone(), jwt_secret));
     
-    // Gerçek ZK verifier'ı oluştur
+    // create real zk verifier
     let zk_verifier = web::Data::new(RealZKVerifier::new());
 
     println!("Server running at http://localhost:8080");

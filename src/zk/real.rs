@@ -22,7 +22,7 @@ impl RealZKVerifier {
         println!("\n=== Creating Wallet Proof ===");
         println!("Wallet address: {}", wallet);
         
-        // Panic'leri yakala
+        // catch panics
         let result = std::panic::catch_unwind(|| {
             println!("Calculating field element...");
             let input = Self::hash_to_field(wallet);
@@ -59,7 +59,7 @@ impl RealZKVerifier {
         println!("\n=== Creating Email Proof ===");
         println!("Email address: {}", email);
         
-        // Panic'leri yakala
+        // catch panics
         let result = std::panic::catch_unwind(|| {
             println!("Calculating field element...");
             let input = Self::hash_to_field(email);
@@ -96,7 +96,7 @@ impl RealZKVerifier {
         println!("\n=== Hash to Field Process ===");
         println!("Input: {}", input);
         
-        // Test için basit bir değer döndür
+        // return a fixed value for testing
         let result = Fr::one();
         
         println!("Using test value: Fr::one()");

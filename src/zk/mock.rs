@@ -15,12 +15,12 @@ impl MockZKVerifier {
 
 impl ZKVerifier for MockZKVerifier {
     fn verify_wallet(&self, _wallet: &str, _proof: &str) -> bool {
-        // Test için her zaman true döndür
+        // return true always for mock
         true
     }
 
     fn verify_email(&self, _email: &str, _proof: &str) -> bool {
-        // Test için her zaman true döndür
+        // return true always for mock
         true
     }
 } 

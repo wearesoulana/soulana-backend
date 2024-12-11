@@ -32,16 +32,16 @@ impl<F: PrimeField> ConstraintSynthesizer<F> for ZKCircuit<F> {
     fn generate_constraints(self, cs: ConstraintSystemRef<F>) -> Result<(), SynthesisError> {
         println!("Generating constraints for ZK circuit");
         
-        // Input değişkeni - bu public input olacak
+        // Input variable - this is the public input
         let input_var = cs.new_input_variable(|| self.input.ok_or(SynthesisError::AssignmentMissing))?;
         
-        // Witness değişkeni - bu gizli kalacak
+        // Witness variable - this is the private input
         let witness = cs.new_witness_variable(|| {
             let input_value = self.input.ok_or(SynthesisError::AssignmentMissing)?;
             Ok(input_value)
         })?;
 
-        // Kısıtlama: input_var = witness
+        // Constraint: input_var = witness
         cs.enforce_constraint(lc!() + input_var, lc!() + witness, lc!() + witness)?;
 
         println!("Constraints generated successfully");
@@ -58,12 +58,12 @@ impl ZKProver {
     pub fn new() -> Self {
         println!("Creating new ZKProver");
         
-        // keys dizini yoksa oluştur
+        // create keys directory if it doesn't exist
         if !Path::new("keys").exists() {
             fs::create_dir("keys").expect("Failed to create keys directory");
         }
 
-        // Eğer kayıtlı anahtarlar varsa onları kullan
+        // if keys exist, load them
         if Path::new(PROVING_KEY_PATH).exists() && Path::new(VERIFYING_KEY_PATH).exists() {
             println!("Loading existing keys");
             let proving_key = fs::read(PROVING_KEY_PATH).expect("Failed to read proving key");
@@ -74,11 +74,11 @@ impl ZKProver {
             };
         }
 
-        // Yoksa yeni anahtarlar oluştur
+        // if keys don't exist, generate new ones
         println!("Generating new keys");
         let rng = &mut ark_std::rand::thread_rng();
         
-        // Sabit bir input değeri kullan
+        // use a fixed input value
         let input = Fr::from(1u64);
         let circuit = ZKCircuit::<Fr> { input: Some(input) };
         
@@ -93,7 +93,7 @@ impl ZKProver {
         let mut verifying_key = Vec::new();
         vk.serialize_compressed(&mut verifying_key).unwrap();
 
-        // Anahtarları dosyaya kaydet
+        // save keys to files
         fs::write(PROVING_KEY_PATH, &proving_key).expect("Failed to save proving key");
         fs::write(VERIFYING_KEY_PATH, &verifying_key).expect("Failed to save verifying key");
 
