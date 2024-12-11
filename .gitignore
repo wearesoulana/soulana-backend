@@ -1,11 +1,40 @@
+# Rust specific
 /target
 **/*.rs.bk
+Cargo.lock
+rust-toolchain.toml
+
+# Environment files
 .env
 .env.*
 !.env.example
+
+# IDE and editor files
 .idea/
 .vscode/
+*.swp
+*.swo
+
+# Debug files
 *.pdb
-Cargo.lock
-rust-toolchain.toml
+debug/
+
+# OS specific
 .DS_Store
+Thumbs.db
+
+# Project specific
+/keys/
+*.log
+*.bak
+tmp/
+
+# Database
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+
+# Temporary files
+*.tmp
+*~
