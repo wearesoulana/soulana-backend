@@ -57,3 +57,25 @@ cargo run
 ```
 
 The server will start at `http://127.0.0.1:8080`
+
+## Database Setup
+
+1. Install diesel_cli:
+```bash
+cargo install diesel_cli --no-default-features --features postgres
+```
+
+2. Set up the database:
+```bash
+diesel setup
+```
+
+3. Run migrations:
+```bash
+diesel migration run
+```
+
+This will create all necessary tables including:
+- Identity tables for wallet and email verification
+- User management tables
+- Project related tables
